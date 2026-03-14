@@ -4,175 +4,158 @@ st.set_page_config(page_title="Oferta", layout="wide")
 
 st.markdown("""
 <style>
-/* Tło całej strony */
+
+/* ukrycie elementów streamlit */
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+
+/* tło */
 .stApp {
-    background-color: #F3EFCB;
+    background-color: #EFE7C6;
 }
 
-/* Usunięcie dużych odstępów u góry */
-.block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
-}
-
-/* Baner */
+/* BANER */
 .banner {
     position: relative;
-    height: 260px;
-    border-radius: 28px;
-    background: #F3EFCB;
+    height: 230px;
+    border-radius: 30px;
+    background: #EFE7C6;
     overflow: hidden;
-    margin-bottom: 40px;
-    box-shadow: 0 10px 30px rgba(20, 40, 60, 0.08);
+    margin-bottom: 60px;
 }
 
-.circle {
-    position: absolute;
-    border-radius: 50%;
-    opacity: 1;
+/* kolorowe koła */
+
+.circle{
+position:absolute;
+border-radius:50%;
 }
 
-.c1 {
-    width: 260px;
-    height: 260px;
-    background: #F0D45B;
-    left: -70px;
-    bottom: -60px;
+.c1{
+width:220px;
+height:220px;
+background:#F0D45B;
+left:-60px;
+bottom:-50px;
 }
 
-.c2 {
-    width: 300px;
-    height: 300px;
-    background: #6EA6C2;
-    left: 180px;
-    top: -70px;
+.c2{
+width:260px;
+height:260px;
+background:#6EA6C2;
+left:160px;
+top:-70px;
 }
 
-.c3 {
-    width: 220px;
-    height: 220px;
-    background: #174B88;
-    right: 170px;
-    top: 10px;
+.c3{
+width:200px;
+height:200px;
+background:#174B88;
+right:180px;
+top:10px;
 }
 
-.c4 {
-    width: 250px;
-    height: 250px;
-    background: #1F3E4A;
-    right: 20px;
-    bottom: -40px;
+.c4{
+width:230px;
+height:230px;
+background:#1F3E4A;
+right:10px;
+bottom:-40px;
 }
 
-.rect {
-    position: absolute;
-    width: 260px;
-    height: 160px;
-    background: #67B4E5;
-    border-radius: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 28px;
+/* niebieski prostokąt */
+.rect{
+position:absolute;
+width:240px;
+height:140px;
+background:#67B4E5;
+border-radius:22px;
+left:50%;
+transform:translateX(-50%);
+bottom:20px;
 }
 
-.banner-content {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 32px 44px;
+/* tekst banera */
+.banner-text{
+position:absolute;
+z-index:10;
+left:40px;
+top:40px;
 }
 
-.banner-title {
-    font-size: 44px;
-    font-weight: 800;
-    color: #174B88;
-    margin: 0;
-    line-height: 1.05;
-    max-width: 520px;
+.banner-title{
+font-size:40px;
+font-weight:800;
+color:#174B88;
+margin:0;
 }
 
-.banner-subtitle {
-    font-size: 18px;
-    color: #1F3E4A;
-    margin-top: 14px;
-    max-width: 520px;
+.banner-sub{
+font-size:18px;
+color:#1F3E4A;
+margin-top:10px;
 }
 
-/* Karty oferty */
-.offer-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-top: 10px;
+/* OFERTA */
+
+.offer-container{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:20px;
 }
 
-.offer-card {
-    background: #A9D2F2;
-    border-radius: 28px;
-    min-height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    box-shadow: 0 8px 20px rgba(23, 75, 136, 0.08);
-    cursor: pointer;
+/* prostokąty */
+
+.offer{
+width:220px;
+height:260px;
+background:#A9D2F2;
+border-radius:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:700;
+color:#174B88;
+transition:0.25s;
+box-shadow:0 6px 16px rgba(0,0,0,0.08);
 }
 
-.offer-card:hover {
-    transform: translateY(-8px);
-    background: #8CC0E8;
-    box-shadow: 0 18px 32px rgba(23, 75, 136, 0.18);
+/* hover */
+
+.offer:hover{
+background:#8CC0E8;
+transform:translateY(-8px);
+box-shadow:0 16px 30px rgba(0,0,0,0.15);
+cursor:pointer;
 }
 
-.offer-card span {
-    font-size: 34px;
-    font-weight: 800;
-    color: #174B88;
-}
-
-/* Responsywność */
-@media (max-width: 900px) {
-    .offer-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .offer-card {
-        min-height: 220px;
-    }
-
-    .banner {
-        height: 300px;
-    }
-
-    .banner-title {
-        font-size: 34px;
-    }
-}
 </style>
 
 <div class="banner">
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-    <div class="circle c4"></div>
-    <div class="rect"></div>
 
-    <div class="banner-content">
-        <h1 class="banner-title">Oferta współpracy</h1>
-        <div class="banner-subtitle">
-            Wybierz opcję najlepiej dopasowaną do Twoich potrzeb.
-        </div>
-    </div>
+<div class="circle c1"></div>
+<div class="circle c2"></div>
+<div class="circle c3"></div>
+<div class="circle c4"></div>
+
+<div class="rect"></div>
+
+<div class="banner-text">
+<h1 class="banner-title">Oferta współpracy</h1>
+<div class="banner-sub">Wybierz opcję najlepiej dopasowaną do Twoich potrzeb</div>
 </div>
 
-<div class="offer-grid">
-    <div class="offer-card"><span>Opcja 1</span></div>
-    <div class="offer-card"><span>Opcja 2</span></div>
-    <div class="offer-card"><span>Opcja 3</span></div>
 </div>
+
+<div class="offer-container">
+
+<div class="offer">Opcja 1</div>
+<div class="offer">Opcja 2</div>
+<div class="offer">Opcja 3</div>
+
+</div>
+
 """, unsafe_allow_html=True)
