@@ -1,362 +1,503 @@
 import streamlit as st
 
-st.set_page_config(page_title="Oferta", layout="wide")
+st.set_page_config(
+    page_title="Oferta współpracy",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# stan kliknięcia
+# -----------------------
+# STATE
+# -----------------------
 if "selected_option" not in st.session_state:
     st.session_state.selected_option = None
 
-# ceny dodatków dla opcji 1
-base_price = 0
-montaz_podstawowy = 100
-dzwiek = 50
-napisy = 40
-efekty = 60
-
+# -----------------------
+# STYLE
+# -----------------------
 st.markdown("""
 <style>
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
+/* Ukrycie elementów Streamlit */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Global */
+html, body, [class*="css"]  {
+    font-family: "Inter", sans-serif;
+}
 
 .stApp {
     background-color: #EFE7C6;
 }
 
+/* Ważne: pełna szerokość strony */
 .block-container {
-    max-width: 1200px;
-    padding-top: 2rem;
-    padding-bottom: 3rem;
+    max-width: 100% !important;
+    padding-top: 0rem !important;
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    padding-bottom: 3rem !important;
 }
 
-/* pływająca cena */
+/* Sekcja z marginesami dla reszty treści */
+.content-wrap {
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 28px;
+}
+
+/* Pływająca cena */
 .price-box {
     position: fixed;
-    top: 20px;
-    right: 30px;
-    z-index: 9999;
-    background: rgba(23, 75, 136, 0.96);
+    top: 16px;
+    right: 16px;
+    z-index: 99999;
+    background: #23589A;
     color: white;
-    padding: 16px 22px;
-    border-radius: 18px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-    min-width: 170px;
-    text-align: center;
+    padding: 14px 18px;
+    border-radius: 20px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+    min-width: 150px;
+    text-align: right;
 }
 
 .price-label {
     font-size: 14px;
-    opacity: 0.9;
+    font-weight: 500;
+    opacity: 0.95;
     margin-bottom: 4px;
 }
 
 .price-value {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 800;
     line-height: 1;
 }
 
-/* baner */
+/* Baner full width */
 .banner {
+    width: 100%;
+    min-height: 300px;
+    background: #E8E1BE;
     position: relative;
-    height: 230px;
-    border-radius: 30px;
-    background: #EFE7C6;
     overflow: hidden;
-    margin-bottom: 50px;
-    box-shadow: 0 10px 28px rgba(31, 62, 74, 0.08);
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 12px 32px rgba(31, 62, 74, 0.08);
 }
 
-.circle {
-    position: absolute;
-    border-radius: 50%;
+.banner-inner {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    padding: 42px 32px 36px 32px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    z-index: 2;
 }
 
-.c1 {
-    width: 220px;
-    height: 220px;
-    background: #F0D45B;
-    left: -60px;
-    bottom: -50px;
-}
-
-.c2 {
-    width: 260px;
-    height: 260px;
-    background: #6EA6C2;
-    left: 160px;
-    top: -70px;
-}
-
-.c3 {
-    width: 200px;
-    height: 200px;
-    background: #174B88;
-    right: 180px;
-    top: 10px;
-}
-
-.c4 {
-    width: 230px;
-    height: 230px;
-    background: #1F3E4A;
-    right: 10px;
-    bottom: -40px;
-}
-
-.rect {
-    position: absolute;
-    width: 240px;
-    height: 140px;
-    background: #67B4E5;
-    border-radius: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 20px;
-}
-
-.banner-text {
-    position: absolute;
-    z-index: 10;
-    left: 40px;
-    top: 40px;
+.banner-copy {
+    position: relative;
+    z-index: 5;
+    max-width: 560px;
 }
 
 .banner-title {
-    font-size: 40px;
+    margin: 0;
+    font-size: 46px;
     font-weight: 800;
     color: #174B88;
-    margin: 0;
+    line-height: 1.05;
 }
 
 .banner-sub {
+    margin-top: 14px;
     font-size: 18px;
     color: #1F3E4A;
-    margin-top: 10px;
+    line-height: 1.5;
 }
 
-/* kafelki */
-.offer-row {
-    display: flex;
-    justify-content: center;
-    gap: 34px;
-    margin-top: 10px;
-    margin-bottom: 35px;
+/* Kształty w banerze */
+.shape {
+    position: absolute;
+    border-radius: 999px;
 }
 
-.offer-button {
-    border: none;
-    background: transparent;
-    padding: 0;
+.shape-yellow {
+    width: 260px;
+    height: 260px;
+    background: #EBCF58;
+    left: -70px;
+    bottom: -55px;
 }
 
-.offer-card {
-    width: 210px;
-    height: 250px;
-    background: #A9D2F2;
-    border-radius: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
+.shape-blue1 {
+    width: 330px;
+    height: 330px;
+    background: #6F9FBE;
+    left: 190px;
+    top: -85px;
+}
+
+.shape-blue2 {
+    width: 230px;
+    height: 230px;
+    background: #1F4F91;
+    right: 210px;
+    top: 12px;
+}
+
+.shape-dark {
+    width: 290px;
+    height: 290px;
+    background: #203E4C;
+    right: 24px;
+    bottom: -48px;
+}
+
+.shape-rect {
+    position: absolute;
+    width: 270px;
+    height: 150px;
+    background: #70AFE0;
+    border-radius: 26px;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+}
+
+/* Nagłówek sekcji */
+.section-title {
+    font-size: 32px;
     font-weight: 800;
     color: #174B88;
-    transition: 0.25s ease;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    cursor: pointer;
+    margin-bottom: 8px;
 }
 
-.offer-card:hover {
-    background: #8CC0E8;
-    transform: translateY(-8px);
-    box-shadow: 0 16px 30px rgba(0,0,0,0.15);
+.section-sub {
+    font-size: 16px;
+    color: #1F3E4A;
+    margin-bottom: 28px;
 }
 
-.offer-card.selected {
-    background: #8CC0E8;
-    outline: 3px solid #174B88;
+/* Przyciski opcji */
+.stButton > button {
+    width: 100%;
+    min-height: 220px;
+    border-radius: 28px;
+    background: #A7C8E7;
+    color: #174B88;
+    font-size: 24px;
+    font-weight: 800;
+    border: none;
+    box-shadow: 0 8px 18px rgba(23, 75, 136, 0.08);
+    transition: all 0.25s ease;
 }
 
-/* sekcja konfiguratora */
-.config-box {
-    background: rgba(255,255,255,0.35);
-    border: 1px solid rgba(23, 75, 136, 0.12);
+.stButton > button:hover {
+    background: #91BCE0;
+    color: #174B88;
+    transform: translateY(-6px);
+    box-shadow: 0 16px 30px rgba(23, 75, 136, 0.16);
+    border: none;
+}
+
+.stButton > button:focus:not(:active) {
+    border: none;
+    box-shadow: 0 0 0 3px rgba(23, 75, 136, 0.18);
+    color: #174B88;
+}
+
+/* Moduł konfiguratora */
+.config-card {
+    margin-top: 26px;
+    background: rgba(255,255,255,0.38);
+    border: 1px solid rgba(23, 75, 136, 0.10);
     border-radius: 26px;
-    padding: 28px 28px 20px 28px;
-    margin-top: 18px;
+    padding: 24px;
     box-shadow: 0 10px 24px rgba(31, 62, 74, 0.06);
 }
 
 .config-title {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 800;
     color: #174B88;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .config-sub {
-    color: #1F3E4A;
     font-size: 16px;
-    margin-bottom: 20px;
+    color: #1F3E4A;
+    margin-bottom: 18px;
 }
 
+/* Checkboxy */
+div[data-testid="stCheckbox"] {
+    background: rgba(255,255,255,0.28);
+    padding: 10px 12px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(23, 75, 136, 0.08);
+}
+
+div[data-testid="stCheckbox"] label p {
+    font-size: 16px !important;
+    color: #1F3E4A !important;
+    font-weight: 500 !important;
+}
+
+/* Podsumowanie */
 .summary-box {
-    background: #F7F2D8;
-    border-radius: 20px;
-    padding: 18px 20px;
-    color: #1F3E4A;
-    margin-top: 14px;
+    background: #F6F0D2;
+    border-radius: 22px;
+    padding: 20px;
+    border: 1px solid rgba(23, 75, 136, 0.08);
 }
 
-.summary-line {
-    font-size: 16px;
-    margin-bottom: 8px;
-}
-
-.summary-total {
+.summary-title {
     font-size: 22px;
     font-weight: 800;
     color: #174B88;
-    margin-top: 12px;
+    margin-bottom: 14px;
 }
 
-/* checkbox labels */
-div[data-testid="stCheckbox"] label p {
-    font-size: 17px !important;
-    color: #1F3E4A !important;
+.summary-line {
+    color: #1F3E4A;
+    font-size: 15px;
+    margin-bottom: 8px;
+    line-height: 1.4;
 }
 
-/* przyciski streamlit */
-.stButton > button {
-    width: 210px;
-    height: 250px;
-    border-radius: 28px;
-    background: #A9D2F2;
-    color: #174B88;
-    font-size: 28px;
+.summary-total {
+    margin-top: 14px;
+    font-size: 24px;
     font-weight: 800;
-    border: none;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-    transition: 0.25s ease;
-}
-
-.stButton > button:hover {
-    background: #8CC0E8;
     color: #174B88;
-    border: none;
-    transform: translateY(-8px);
 }
 
-@media (max-width: 900px) {
-    .offer-row {
-        flex-direction: column;
-        align-items: center;
+/* Mobile */
+@media (max-width: 768px) {
+    .content-wrap {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 18px;
     }
+
+    .banner {
+        min-height: 240px;
+        border-radius: 0 0 22px 22px;
+    }
+
+    .banner-inner {
+        min-height: 240px;
+        padding: 24px 16px 24px 16px;
+    }
+
+    .banner-title {
+        font-size: 30px;
+    }
+
+    .banner-sub {
+        font-size: 15px;
+        max-width: 280px;
+    }
+
+    .shape-yellow {
+        width: 180px;
+        height: 180px;
+        left: -60px;
+        bottom: -45px;
+    }
+
+    .shape-blue1 {
+        width: 210px;
+        height: 210px;
+        left: 85px;
+        top: -55px;
+    }
+
+    .shape-blue2 {
+        width: 150px;
+        height: 150px;
+        right: 88px;
+        top: 20px;
+    }
+
+    .shape-dark {
+        width: 190px;
+        height: 190px;
+        right: -20px;
+        bottom: -36px;
+    }
+
+    .shape-rect {
+        width: 170px;
+        height: 95px;
+        bottom: 18px;
+    }
+
     .price-box {
-        right: 15px;
-        top: 15px;
-        min-width: 140px;
+        top: 10px;
+        right: 10px;
+        min-width: 126px;
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
+    .price-label {
+        font-size: 12px;
+    }
+
+    .price-value {
+        font-size: 22px;
+    }
+
+    .section-title {
+        font-size: 24px;
+    }
+
+    .section-sub {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .stButton > button {
+        min-height: 150px;
+        font-size: 20px;
+        border-radius: 22px;
+    }
+
+    .config-card {
+        padding: 18px;
+        border-radius: 22px;
+    }
+
+    .config-title {
+        font-size: 22px;
+    }
+
+    .summary-total {
+        font-size: 22px;
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# baner
+# -----------------------
+# BANNER
+# -----------------------
 st.markdown("""
 <div class="banner">
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-    <div class="circle c4"></div>
-    <div class="rect"></div>
+    <div class="shape shape-yellow"></div>
+    <div class="shape shape-blue1"></div>
+    <div class="shape shape-blue2"></div>
+    <div class="shape shape-dark"></div>
+    <div class="shape-rect"></div>
 
-    <div class="banner-text">
-        <h1 class="banner-title">Oferta współpracy</h1>
-        <div class="banner-sub">Wybierz opcję najlepiej dopasowaną do Twoich potrzeb</div>
+    <div class="banner-inner">
+        <div class="banner-copy">
+            <h1 class="banner-title">Oferta współpracy</h1>
+            <div class="banner-sub">
+                Wybierz opcję najlepiej dopasowaną do Twoich potrzeb i skonfiguruj usługę pod swój projekt.
+            </div>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# 3 opcje
-col1, col2, col3 = st.columns([1, 1, 1], gap="large")
+# -----------------------
+# CONTENT START
+# -----------------------
+st.markdown('<div class="content-wrap">', unsafe_allow_html=True)
+
+st.markdown('<div class="section-title">Dostępne opcje</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-sub">Kliknij wybraną opcję, aby zobaczyć szczegóły i dodatki.</div>', unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns(3, gap="large")
 
 with col1:
-    if st.button("Opcja 1", key="opcja1"):
+    if st.button("Opcja 1", key="opcja_1"):
         st.session_state.selected_option = "Opcja 1"
 
 with col2:
-    if st.button("Opcja 2", key="opcja2"):
+    if st.button("Opcja 2", key="opcja_2"):
         st.session_state.selected_option = "Opcja 2"
 
 with col3:
-    if st.button("Opcja 3", key="opcja3"):
+    if st.button("Opcja 3", key="opcja_3"):
         st.session_state.selected_option = "Opcja 3"
 
-# konfigurator dla opcji 1
 total_price = 0
 selected_items = []
 
 if st.session_state.selected_option == "Opcja 1":
     st.markdown("""
-    <div class="config-box">
-        <div class="config-title">Skonfiguruj Opcję 1</div>
+    <div class="config-card">
+        <div class="config-title">Konfigurator — Opcja 1</div>
         <div class="config-sub">Zaznacz dodatki, a cena zaktualizuje się automatycznie.</div>
-    </div>
     """, unsafe_allow_html=True)
 
-    col_left, col_right = st.columns([1.2, 1], gap="large")
+    left, right = st.columns([1.35, 1], gap="large")
 
-    with col_left:
+    with left:
         add_montaz = st.checkbox("Montaż podstawowy +100 zł (do 2 minut)")
         add_dzwiek = st.checkbox("Dodanie dźwięku +50 zł")
         add_napisy = st.checkbox("Dodanie napisów +40 zł")
         add_efekty = st.checkbox("Dodanie efektów specjalnych +60 zł")
 
     if add_montaz:
-        total_price += montaz_podstawowy
+        total_price += 100
         selected_items.append("Montaż podstawowy — 100 zł")
 
     if add_dzwiek:
-        total_price += dzwiek
+        total_price += 50
         selected_items.append("Dodanie dźwięku — 50 zł")
 
     if add_napisy:
-        total_price += napisy
+        total_price += 40
         selected_items.append("Dodanie napisów — 40 zł")
 
     if add_efekty:
-        total_price += efekty
+        total_price += 60
         selected_items.append("Dodanie efektów specjalnych — 60 zł")
 
-    with col_right:
+    with right:
         st.markdown('<div class="summary-box">', unsafe_allow_html=True)
-        st.markdown("### Podsumowanie")
+        st.markdown('<div class="summary-title">Podsumowanie</div>', unsafe_allow_html=True)
+
         if selected_items:
             for item in selected_items:
                 st.markdown(f'<div class="summary-line">• {item}</div>', unsafe_allow_html=True)
         else:
-            st.markdown('<div class="summary-line">Nie wybrano jeszcze dodatków.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="summary-line">Nie wybrano jeszcze żadnych dodatków.</div>', unsafe_allow_html=True)
 
-        st.markdown(f'<div class="summary-total">Cena końcowa: {total_price} zł</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="summary-total">Razem: {total_price} zł</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 elif st.session_state.selected_option == "Opcja 2":
     st.markdown("""
-    <div class="config-box">
+    <div class="config-card">
         <div class="config-title">Opcja 2</div>
-        <div class="config-sub">Tu później możemy dodać osobny konfigurator.</div>
+        <div class="config-sub">Tutaj możemy później dodać osobny zakres usługi i osobny cennik.</div>
     </div>
     """, unsafe_allow_html=True)
 
 elif st.session_state.selected_option == "Opcja 3":
     st.markdown("""
-    <div class="config-box">
+    <div class="config-card">
         <div class="config-title">Opcja 3</div>
-        <div class="config-sub">Tu później możemy dodać osobny konfigurator.</div>
+        <div class="config-sub">Tutaj możemy później dodać trzeci wariant oferty.</div>
     </div>
     """, unsafe_allow_html=True)
 
-# pływająca cena
+st.markdown('</div>', unsafe_allow_html=True)
+
+# -----------------------
+# FLOATING PRICE
+# -----------------------
 st.markdown(f"""
 <div class="price-box">
     <div class="price-label">Cena końcowa</div>
