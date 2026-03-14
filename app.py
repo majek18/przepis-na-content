@@ -6,15 +6,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# -------------------------
-# STATE
-# -------------------------
 if "selected_option" not in st.session_state:
     st.session_state.selected_option = None
 
-# -------------------------
-# STYLE
-# -------------------------
 st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}
@@ -42,7 +36,6 @@ html, body, [class*="css"] {
     padding: 28px 28px 48px 28px;
 }
 
-/* floating price */
 .price-box {
     position: fixed;
     top: 14px;
@@ -70,7 +63,7 @@ html, body, [class*="css"] {
     line-height: 1;
 }
 
-/* banner */
+/* BANER */
 .banner {
     position: relative;
     width: 100%;
@@ -150,7 +143,7 @@ html, body, [class*="css"] {
     transform: translateX(-50%);
 }
 
-/* typography */
+/* TYPO */
 .section-title {
     font-size: 34px;
     font-weight: 800;
@@ -164,7 +157,7 @@ html, body, [class*="css"] {
     margin-bottom: 24px;
 }
 
-/* option card */
+/* KARTY OPCJI */
 .option-card {
     background: #A7C8E7;
     border-radius: 28px;
@@ -211,7 +204,7 @@ html, body, [class*="css"] {
     margin-bottom: 18px;
 }
 
-/* choose buttons */
+/* przyciski */
 .stButton > button {
     width: 100%;
     border-radius: 16px;
@@ -235,30 +228,7 @@ html, body, [class*="css"] {
     color: white;
 }
 
-/* inline mobile configurator */
-.inline-config {
-    margin-top: 14px;
-    background: rgba(255,255,255,0.34);
-    border: 1px solid rgba(23, 75, 136, 0.10);
-    border-radius: 20px;
-    padding: 14px;
-}
-
-.inline-config-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #174B88;
-    margin-bottom: 10px;
-}
-
-.inline-price {
-    margin-top: 10px;
-    font-size: 18px;
-    font-weight: 800;
-    color: #174B88;
-}
-
-/* desktop configurator */
+/* KONFIGURATOR */
 .config-card {
     margin-top: 28px;
     background: rgba(255,255,255,0.38);
@@ -281,7 +251,6 @@ html, body, [class*="css"] {
     margin-bottom: 18px;
 }
 
-/* checkboxes */
 div[data-testid="stCheckbox"] {
     background: rgba(255,255,255,0.30);
     padding: 10px 12px;
@@ -296,7 +265,6 @@ div[data-testid="stCheckbox"] label p {
     font-weight: 500 !important;
 }
 
-/* summary */
 .summary-box {
     background: #F5EFCF;
     border-radius: 22px;
@@ -325,16 +293,7 @@ div[data-testid="stCheckbox"] label p {
     color: #174B88;
 }
 
-/* mobile helper */
-.mobile-only {
-    display: none;
-}
-
-.desktop-only {
-    display: block;
-}
-
-/* responsive */
+/* MOBILE */
 @media (max-width: 768px) {
     .content-wrap {
         padding: 18px 14px 38px 14px;
@@ -449,46 +408,32 @@ div[data-testid="stCheckbox"] label p {
     .summary-total {
         font-size: 22px;
     }
-
-    .mobile-only {
-        display: block;
-    }
-
-    .desktop-only {
-        display: none;
-    }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------
-# HELPERS
-# -------------------------
 def calculate_option_1_total():
     total = 0
     selected_items = []
 
-    if st.session_state.get("add_montaz_mobile", False) or st.session_state.get("add_montaz_desktop", False):
+    if st.session_state.get("add_montaz", False):
         total += 100
         selected_items.append("Montaż podstawowy — 100 zł")
 
-    if st.session_state.get("add_dzwiek_mobile", False) or st.session_state.get("add_dzwiek_desktop", False):
+    if st.session_state.get("add_dzwiek", False):
         total += 50
         selected_items.append("Dodanie dźwięku — 50 zł")
 
-    if st.session_state.get("add_napisy_mobile", False) or st.session_state.get("add_napisy_desktop", False):
+    if st.session_state.get("add_napisy", False):
         total += 40
         selected_items.append("Dodanie napisów — 40 zł")
 
-    if st.session_state.get("add_efekty_mobile", False) or st.session_state.get("add_efekty_desktop", False):
+    if st.session_state.get("add_efekty", False):
         total += 60
         selected_items.append("Dodanie efektów specjalnych — 60 zł")
 
     return total, selected_items
 
-# -------------------------
-# BANNER
-# -------------------------
 st.markdown("""
 <div class="main-wrap">
 <div class="banner">
@@ -508,9 +453,6 @@ Wybierz opcję najlepiej dopasowaną do Twoich potrzeb i skonfiguruj usługę po
 </div>
 """, unsafe_allow_html=True)
 
-# -------------------------
-# CONTENT
-# -------------------------
 st.markdown('<div class="content-wrap">', unsafe_allow_html=True)
 st.markdown('<div class="section-title">Dostępne opcje</div>', unsafe_allow_html=True)
 st.markdown('<div class="section-sub">Wybierz pakiet, a następnie skonfiguruj szczegóły.</div>', unsafe_allow_html=True)
@@ -530,39 +472,6 @@ with col1:
 
     if st.button("Wybierz opcję 1", key="opcja_1"):
         st.session_state.selected_option = "Opcja 1"
-
-    # MOBILE: konfigurator bezpośrednio pod opcją
-    st.markdown('<div class="mobile-only">', unsafe_allow_html=True)
-    if st.session_state.selected_option == "Opcja 1":
-        st.markdown("""
-<div class="inline-config">
-<div class="inline-config-title">Skonfiguruj usługę</div>
-</div>
-""", unsafe_allow_html=True)
-
-        st.checkbox(
-            "Montaż podstawowy +100 zł (do 2 minut)",
-            key="add_montaz_mobile"
-        )
-        st.checkbox(
-            "Dodanie dźwięku +50 zł",
-            key="add_dzwiek_mobile"
-        )
-        st.checkbox(
-            "Dodanie napisów +40 zł",
-            key="add_napisy_mobile"
-        )
-        st.checkbox(
-            "Dodanie efektów specjalnych +60 zł",
-            key="add_efekty_mobile"
-        )
-
-        mobile_total, _ = calculate_option_1_total()
-        st.markdown(
-            f'<div class="inline-price">Cena: {mobile_total} zł</div>',
-            unsafe_allow_html=True
-        )
-    st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
     st.markdown("""
@@ -592,9 +501,6 @@ with col3:
     if st.button("Wybierz opcję 3", key="opcja_3"):
         st.session_state.selected_option = "Opcja 3"
 
-# DESKTOP: konfigurator niżej
-st.markdown('<div class="desktop-only">', unsafe_allow_html=True)
-
 if st.session_state.selected_option == "Opcja 1":
     st.markdown("""
 <div class="config-card">
@@ -606,22 +512,10 @@ if st.session_state.selected_option == "Opcja 1":
     left, right = st.columns([1.35, 1], gap="large")
 
     with left:
-        st.checkbox(
-            "Montaż podstawowy +100 zł (do 2 minut)",
-            key="add_montaz_desktop"
-        )
-        st.checkbox(
-            "Dodanie dźwięku +50 zł",
-            key="add_dzwiek_desktop"
-        )
-        st.checkbox(
-            "Dodanie napisów +40 zł",
-            key="add_napisy_desktop"
-        )
-        st.checkbox(
-            "Dodanie efektów specjalnych +60 zł",
-            key="add_efekty_desktop"
-        )
+        st.checkbox("Montaż podstawowy +100 zł (do 2 minut)", key="add_montaz")
+        st.checkbox("Dodanie dźwięku +50 zł", key="add_dzwiek")
+        st.checkbox("Dodanie napisów +40 zł", key="add_napisy")
+        st.checkbox("Dodanie efektów specjalnych +60 zł", key="add_efekty")
 
     total_price, selected_items = calculate_option_1_total()
 
@@ -654,9 +548,6 @@ elif st.session_state.selected_option == "Opcja 3":
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-# final floating price
 total_price, _ = calculate_option_1_total()
 
 st.markdown('</div>', unsafe_allow_html=True)
